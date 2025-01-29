@@ -124,3 +124,9 @@ class CAG:
         except Exception as e:
             # Handle the exception or log it
             return [None, f"Error occurred: {str(e)}"]
+    
+    def save_kv_cache(self, cache: DynamicCache, path: str):
+        torch.save(cache, path)
+
+    def load_kv_cache(self, path: str):
+        return torch.load(path, weights_only=True)
