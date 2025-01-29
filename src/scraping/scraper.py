@@ -1,8 +1,5 @@
 import requests
 from langchain.document_loaders import PyMuPDFLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.vectorstores import FAISS
-from langchain.embeddings.openai import OpenAIEmbeddings
 import os
 from .utils import find_redundant_segments, remove_redundant_segments, handle_near_duplicates
 from bs4 import BeautifulSoup
@@ -11,8 +8,11 @@ import pandas as pd
 
 class UrlScraper:
     
-    def __init__(self, df:pd.DataFrame, redundancy_threshold:float=0.5, near_duplicates_threshold:float=0.8):
-        df["Unnamed: 2"] = df["Unnamed: 2"].astype('str')
+    def __init__(self, df:pd.DataFrame, output_path:str, input_path:str = "../../data/Knowledge_url_and_content.csv", redundancy_threshold:float=0.5, near_duplicates_threshold:float=0.8):
+        df = df.rename(columns={"Unnamed: 2": "content"})
+        
+        df["content"] = df["content"].astype('str')
+        print(df)
         self.df = df
         self.redundancy_threshold = redundancy_threshold
         self.near_duplicates_threshold = near_duplicates_threshold
@@ -44,7 +44,7 @@ class UrlScraper:
             url = line['Lien vers le knowledge']
             response = requests.get(url)
 
-            if response.status_code == 200 and line['Unnamed: 2']  == "nan": # Handle edge cases where the page isn't accessible
+            if response.status_code == 200 and line['content']  == "nan": # Handle edge cases where the page isn't accessible
 
                 ## Handle .pdf content
                 if url.lower().endswith('.pdf'):
@@ -60,8 +60,7 @@ class UrlScraper:
 
                     text_content.append(text)
             else:
-                text_content.append(line['Unnamed: 2'])
-        print(text_content)
+                text_content.append(line['content'])
         
         return text_content
     

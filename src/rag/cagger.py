@@ -10,8 +10,7 @@ class CAG:
         - The advantage of this approach is that it does not requires pre-indexing of Documents
         - The model is a Qwen2.5-0.5B-Instruct model with 32k context window, enough to handle long context
     """
-    def __init__(self, text_content:list[str], model_name:str="Qwen/Qwen2.5-0.5B-Instruct", 
-                ) -> None:
+    def __init__(self, text_content:list[str], model_name:str="Qwen/Qwen2.5-0.5B-Instruct") -> None:
         self.model_name = model_name
         self.text_content = text_content
         self.knowledge = "\n---------------------\n".join(self.text_content)
@@ -65,7 +64,8 @@ class CAG:
                 self.model_name,
                 torch_dtype="auto",
                 device_map="auto",
-                temperature=0.0
+                temperature=0.0,
+                do_sample=True
             )
         model.eval()
         tokenizer = AutoTokenizer.from_pretrained(self.model_name)
@@ -113,14 +113,14 @@ class CAG:
         for i in range(len(cache.key_cache)):
             cache.key_cache[i] = cache.key_cache[i][:, :, :origin_len, :]
             cache.value_cache[i] = cache.value_cache[i][:, :, :origin_len, :]
-    
-    import re
 
     def extract_text_between_markers(self, text):
-        match1 = re.search(r"<\|start_header_id\|>Answer:(.*?)<\|eot_id\|>", text, re.DOTALL)
-        #match2 = re.search(r"Assistant: <|eot_id|>(.*?)Assistant: <|eot_id|>", text, re.DOTALL)
-        #match3 = re.search(r"<|end_header_id|>(.*?)<|eot_id|>", text, re.DOTALL)
-        if match1 and len(match1.group(1).strip()) > 40:
-            return match1.group(1).strip()
-        else:
-            return None
+        try:
+            match1 = re.search(r"<\|start_header_id\|>Answer:(.*?)<\|eot_id\|>", text, re.DOTALL)
+            if match1 and len(match1.group(1).strip()) > 40:
+                return (match1.group(1).strip(), None)
+            else:
+                return [None, text]
+        except Exception as e:
+            # Handle the exception or log it
+            return [None, f"Error occurred: {str(e)}"]

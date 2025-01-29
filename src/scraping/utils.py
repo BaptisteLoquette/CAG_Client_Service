@@ -28,6 +28,7 @@ def find_redundant_segments(pages:list) -> list:
     segment_counter = Counter()
 
     for page in pages:
+        print(page)
         segments = tokenize_text(page)
         segment_counter.update(segments)
 
@@ -55,11 +56,11 @@ def handle_near_duplicates(pages: List[str], similarity_threshold: float = 0.8) 
     This function handles near duplicates by removing them from the list based on a similarity threshold.
 
     Args:
-        - pages: List[str] -> The list of text entries to process.
+        - pages: List:str -> The list of text entries to process.
         - similarity_threshold: float -> The threshold above which two entries are considered near duplicates.
 
     Returns:
-        - List[str] -> The list with near duplicates removed.
+        - List:str -> The list with near duplicates removed.
     """
     unique_pages = []
     for page in pages:
