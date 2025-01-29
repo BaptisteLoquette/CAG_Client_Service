@@ -9,7 +9,7 @@ class CAG:
     def __init__(self, text_content, model_name="Qwen/Qwen2.5-0.5B-Instruct", 
                 question = "How can I subscribe and update my payment details?",
                 answer_instruction = """You are an helpfull assistant that gives give answers and help the user based on given context. You must ouput in French. Only output the answer, no other text.
-                If the user's query is not a real rag query or not related or outside of the given contexts, you must output "out of scope"."""
+                If the user's query is not a real rag query or not related or outside of the given contexts below, you must output "out of scope"."""
                 ) -> None:
         self.model_name = model_name
         self.text_content = text_content
@@ -34,6 +34,8 @@ class CAG:
 
 
         prompt = f"""
+        Question:
+        {self.question}
         INSTRUCTIONS:
         {self.answer_instruction}
         Context information is below.
@@ -41,8 +43,6 @@ class CAG:
         ------------------------------------------------
         {knowledge}
         ------------------------------------------------
-        Question:
-        {self.question}
         """
 
         return prompt
@@ -62,9 +62,7 @@ class CAG:
                 model_name,
                 torch_dtype="auto",
                 device_map="auto",
-                temperature=0.0,
-                top_p=0.95,
-                top_k=40
+                temperature=0.0
             )
         model.eval()
         tokenizer = AutoTokenizer.from_pretrained(self.model_name)
