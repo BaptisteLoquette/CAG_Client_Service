@@ -1,3 +1,9 @@
+import requests
+from langchain.document_loaders import PyMuPDFLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain.vectorstores import FAISS
+from langchain.embeddings.openai import OpenAIEmbeddings
+import os
 from .utils import find_redundant_segments, remove_redundant_segments, handle_near_duplicates
 from bs4 import BeautifulSoup
 import requests
@@ -38,14 +44,14 @@ class UrlScraper:
             url = line['Lien vers le knowledge']
             response = requests.get(url)
 
-            if response.status_code == 200 and line['Unnamed: 2'] != "nan": # Handle edge cases where the page isn't accessible
+            if response.status_code == 200 and line['Unnamed: 2']  == "nan": # Handle edge cases where the page isn't accessible
 
                 ## Handle .pdf content
                 if url.lower().endswith('.pdf'):
-                    pass
+                    text_content.append(self.process_pdf_from_url(url))
 
                 ## Handle .html content
-                elif url.lower().endswith('.html'):
+                else:
                     html_content = response.content
 
                     soup = BeautifulSoup(html_content, 'html.parser') # bs parse
@@ -73,3 +79,41 @@ class UrlScraper:
         text_content = remove_redundant_segments(text_content, redundant_segments)
         text_content = handle_near_duplicates(text_content, self.redundancy_threshold)
         return text_content
+    
+    def download_pdf(self, url, save_path="temp.pdf"):
+        response = requests.get(url, stream=True)
+        if response.status_code == 200:
+            with open(save_path, "wb") as file:
+                for chunk in response.iter_content(chunk_size=1024):
+                    file.write(chunk)
+            return save_path
+        else:
+            raise Exception("Failed to download PDF")
+
+    def extract_text_from_pdf(self, pdf_path):
+        loader = PyMuPDFLoader(pdf_path)
+        documents = loader.load()
+        text = "\n".join([doc.page_content for doc in documents])
+        return text
+
+    def download_pdf(self, url, save_path="temp.pdf"):
+        response = requests.get(url, stream=True)
+        if response.status_code == 200:
+            with open(save_path, "wb") as file:
+                for chunk in response.iter_content(chunk_size=1024):
+                    file.write(chunk)
+            return save_path
+        else:
+            raise Exception("Failed to download PDF")
+
+    def extract_text_from_pdf(self, pdf_path):
+        loader = PyMuPDFLoader(pdf_path)
+        documents = loader.load()
+        text = "\n".join([doc.page_content for doc in documents])
+        return text
+
+    def process_pdf_from_url(self, pdf_url):
+        pdf_path = self.download_pdf(pdf_url)
+        extracted_text = self.extract_text_from_pdf(pdf_path)
+        os.remove(pdf_path)
+        return extracted_text
