@@ -1,0 +1,9 @@
+gradio
+transformers
+pandas
+beautifulsoup4
+requests
+qwen-vl-utils[decord]==0.0.8
+git+https://github.com/huggingface/transformers
+accelerate>=0.26.0
+
