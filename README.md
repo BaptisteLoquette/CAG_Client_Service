@@ -9,3 +9,6 @@ Further more the **Augmented generation is done in one pass** as the knowledge b
 [video_CAG_tolk_ai_github_README.webm](https://github.com/user-attachments/assets/353b0bfb-32dd-45fe-995a-22c97db9d050)
 
 **This demo is run on a single GTX 4070**
+
+
+Here we also save the KV Cache that allows to load the precomputed cache directly, without the need to regenerate it $\to$ important for scalability in large-scale usage.
