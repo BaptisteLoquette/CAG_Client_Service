@@ -24,6 +24,7 @@ class CAG:
              Your task is to output the accurate answer that respond to the user question.
              If the user's query is not related or outside of the given contexts, you must output "out of scope".
              You must not ouput your reasoning, or any other unneeded text.
+             Don't output false or invented information.
              """},
             {"role": "user", "content": self.prompt}
         ]
