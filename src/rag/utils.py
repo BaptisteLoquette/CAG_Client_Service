@@ -8,8 +8,8 @@ class CAG:
     """
     def __init__(self, text_content, model_name="Qwen/Qwen2.5-0.5B-Instruct", 
                 question = "How can I subscribe and update my payment details?",
-                answer_instruction = """You are an helpfull assistant that gives short answers based on given context. You must ouput in French. Only output the answer, no other text.
-        If the user query is not related to the context, you should say "out of scope".
+                answer_instruction = """You are an helpfull assistant that gives give answers and help the user based on given context. You must ouput in French. Only output the answer, no other text.
+        If the user query is not related or outside of the given contexts, you must output "out of scope".
         Make sure to answer in French."""
                 ):
         self.model_name = model_name
@@ -20,8 +20,8 @@ class CAG:
         self.model.eval()
         self.prompt = self.get_prompt()
         self.messages = [
-            {"role": """system", "content": "You are Qwen, created by Alibaba Cloud. You are a helpful french assistant that must output in French, designed for non technical people.
-             You are an assistant, your task is to give short answers based on the given context. Make sure to ouput in French.
+            {"role": """system", "content": "You are Qwen, created by Alibaba Cloud. You are a helpful assistant, designed for non technical people.
+             You are an assistant, your task is to give answers and help the user based on the given context.
              Your task is to output the right answer that respond to the user question. 
              You must not ouput your reasoning, or any other unneeded text.
              """},
@@ -33,19 +33,15 @@ class CAG:
 
 
         prompt = f"""
-        <|begin_of_text|>
-        <|start_header_id|>user<|end_header_id|>
+        INSTRUCTIONS:
+        {self.answer_instruction}
         Context information is below.
-        CONTEXT:
+        Context:
         ------------------------------------------------
         {knowledge}
         ------------------------------------------------
-        INSTRUCTIONS:
-        {self.answer_instruction}
         Question:
         {self.question}
-        <|eot_id|>
-        <|start_header_id|>assistant<|end_header_id|>
         """
 
         return prompt
