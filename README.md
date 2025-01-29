@@ -12,3 +12,7 @@ Further more the **Augmented generation is done in one pass** as the knowledge b
 
 
 Here we also save the KV Cache that allows to load the precomputed cache directly, without the need to regenerate it $\to$ important for scalability in large-scale usage.
+
+## Illustration of CAG
+
+![alt text](image.png)
