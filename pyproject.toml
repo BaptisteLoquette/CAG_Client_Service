@@ -1,0 +1,16 @@
+[project]
+name = "cag-client-service"
+version = "0.1.0"
+description = "Cache Augmented Generation for 40x faster Augmented Generation, and better accuracy without any pre-indexing, allowing for less storage, Coming up : VL CAG and Hybrid CAG + RAG and Multi-step CAG"
+authors = [
+    {name = "BaptisteLoquette",email = "Baptisteloquette.entr@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
